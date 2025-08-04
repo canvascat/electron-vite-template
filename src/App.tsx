@@ -1,12 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import UpdateElectron from "@/components/update";
 import { useState } from "react";
 import logoElectron from "./assets/logo-electron.svg";
@@ -45,8 +39,7 @@ function App() {
 						Electron + Vite + React
 					</h1>
 					<p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-6">
-						现代化的桌面应用开发框架，结合了 Electron 的强大功能和 Vite
-						的快速开发体验
+						现代化的桌面应用开发框架，结合了 Electron 的强大功能和 Vite 的快速开发体验
 					</p>
 
 					{/* Technology Stack Badges */}
@@ -150,7 +143,7 @@ function App() {
 				</Card>
 
 				{/* Update Component */}
-				<div className="mt-8">
+				<div className="mt-8 flex justify-center">
 					<UpdateElectron />
 				</div>
 			</div>

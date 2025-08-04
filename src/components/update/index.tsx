@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Progress as ProgressUI } from "@/components/ui/progress";
 import type { ProgressInfo } from "electron-updater";
-import { AlertCircle, CheckCircle, Info } from "lucide-react";
+import { AlertCircle, CheckCircle, Download, Info, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const Update = () => {
@@ -50,13 +50,10 @@ const Update = () => {
 		[],
 	);
 
-	const onUpdateError = useCallback(
-		(_event: Electron.IpcRendererEvent, arg1: ErrorType) => {
-			setUpdateAvailable(false);
-			setUpdateError(arg1);
-		},
-		[],
-	);
+	const onUpdateError = useCallback((_event: Electron.IpcRendererEvent, arg1: ErrorType) => {
+		setUpdateAvailable(false);
+		setUpdateError(arg1);
+	}, []);
 
 	const onDownloadProgress = useCallback(
 		(_event: Electron.IpcRendererEvent, arg1: ProgressInfo) => {
@@ -65,28 +62,19 @@ const Update = () => {
 		[],
 	);
 
-	const onUpdateDownloaded = useCallback(
-		(_event: Electron.IpcRendererEvent, ...args: any[]) => {
-			setProgressInfo({ percent: 100 });
-		},
-		[],
-	);
+	const onUpdateDownloaded = useCallback((_event: Electron.IpcRendererEvent, ...args: any[]) => {
+		setProgressInfo({ percent: 100 });
+	}, []);
 
 	useEffect(() => {
 		// Get version information and whether to update
-		window.electron.ipcRenderer.on(
-			"update-can-available",
-			onUpdateCanAvailable,
-		);
+		window.electron.ipcRenderer.on("update-can-available", onUpdateCanAvailable);
 		window.electron.ipcRenderer.on("update-error", onUpdateError);
 		window.electron.ipcRenderer.on("download-progress", onDownloadProgress);
 		window.electron.ipcRenderer.on("update-downloaded", onUpdateDownloaded);
 
 		return () => {
-			window.electron.ipcRenderer.off(
-				"update-can-available",
-				onUpdateCanAvailable,
-			);
+			window.electron.ipcRenderer.off("update-can-available", onUpdateCanAvailable);
 			window.electron.ipcRenderer.off("update-error", onUpdateError);
 			window.electron.ipcRenderer.off("download-progress", onDownloadProgress);
 			window.electron.ipcRenderer.off("update-downloaded", onUpdateDownloaded);
@@ -126,9 +114,7 @@ const Update = () => {
 							<div className="space-y-4">
 								<Alert>
 									<CheckCircle className="h-4 w-4" />
-									<AlertDescription>
-										最新版本: v{versionInfo?.newVersion}
-									</AlertDescription>
+									<AlertDescription>最新版本: v{versionInfo?.newVersion}</AlertDescription>
 								</Alert>
 
 								<div className="space-y-2">
@@ -138,10 +124,7 @@ const Update = () => {
 											v{versionInfo?.version} → v{versionInfo?.newVersion}
 										</span>
 									</div>
-									<ProgressUI
-										value={progressInfo?.percent}
-										className="w-full"
-									/>
+									<ProgressUI value={progressInfo?.percent} className="w-full" />
 									<div className="text-right text-sm text-muted-foreground">
 										{Math.min(progressInfo?.percent || 0, 100).toFixed(1)}%
 									</div>
@@ -191,43 +174,12 @@ const Update = () => {
 			>
 				{checking ? (
 					<>
-						<svg
-							className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-						>
-							<circle
-								className="opacity-25"
-								cx="12"
-								cy="12"
-								r="10"
-								stroke="currentColor"
-								strokeWidth="4"
-							></circle>
-							<path
-								className="opacity-75"
-								fill="currentColor"
-								d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-							></path>
-						</svg>
+						<RefreshCw className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
 						检查中...
 					</>
 				) : (
 					<>
-						<svg
-							className="w-4 h-4 mr-2"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-							/>
-						</svg>
+						<Download className="w-4 h-4 mr-2" />
 						检查更新
 					</>
 				)}
