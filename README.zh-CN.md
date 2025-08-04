@@ -168,14 +168,13 @@ pnpm add -D [package-name]
 - **vite.config.ts** - Vite 配置，包含 Electron 插件
 - **electron-builder.json** - Electron Builder 配置
 - **tsconfig.json** - TypeScript 配置
-- **tailwind.config.js** - Tailwind CSS 配置
 - **components.json** - shadcn/ui 配置
 - **prettier.config.js** - Prettier 配置
 - **.oxlintrc.json** - Oxlint 配置
 
 ## 🚨 安全考虑
 
-本模板默认在渲染进程中集成了 Node.js API。如果您想遵循 **Electron 安全最佳实践**，可以通过移除 `vite.config.ts` 中的渲染器插件配置来禁用此功能。
+本模板遵循 **Electron 安全最佳实践**，默认在渲染进程中禁用了 Node.js API。 。
 
 ## ❔ 常见问题
 

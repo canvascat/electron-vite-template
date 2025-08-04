@@ -40,7 +40,7 @@ pnpm add electron-updater
 
 3. ##### Electron更新UI页面
 
-   主要功能是：用户触发上述(2.)更新逻辑的UI页面。用户可以通过点击页面触发electron更新的不同功能。
+   主要功能是：用户触发上述(2.)更新逻辑的UI页面。用户可以通过点击页面触发electron更新的不同功能。UI界面使用了lucide-react的现代化图标，提供更好的用户体验。
    更多见 : [components/update...](index.tsx)
 
 ---

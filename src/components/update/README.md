@@ -37,7 +37,7 @@ pnpm add electron-updater
 
 3. ##### Updating UI pages in Electron:
 
-   The main function is to provide a UI page for users to trigger the update logic mentioned in (2.) above. Users can click on the page to trigger different update functions in Electron.
+   The main function is to provide a UI page for users to trigger the update logic mentioned in (2.) above. Users can click on the page to trigger different update functions in Electron. The UI includes modern icons from lucide-react for better user experience.
 
    For more information, please refer to : [components/update...](index.tsx)
 

@@ -170,14 +170,13 @@ pnpm add -D [package-name]
 - **vite.config.ts** - Vite configuration with Electron plugin
 - **electron-builder.json** - Electron Builder configuration
 - **tsconfig.json** - TypeScript configuration
-- **tailwind.config.js** - Tailwind CSS configuration
 - **components.json** - shadcn/ui configuration
 - **prettier.config.js** - Prettier configuration
 - **.oxlintrc.json** - Oxlint configuration
 
 ## 🚨 Security Considerations
 
-This template integrates Node.js API in the renderer process by default. If you want to follow **Electron Security Best Practices**, you can disable this feature by removing the renderer plugin configuration in `vite.config.ts`.
+This template follows **Electron Security Best Practices** and disables Node.js API in the renderer process by default.
 
 ## ❔ FAQ
 
