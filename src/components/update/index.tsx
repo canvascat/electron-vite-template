@@ -1,6 +1,16 @@
-import Modal from "@/components/update/Modal";
-import Progress from "@/components/update/Progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Progress as ProgressUI } from "@/components/ui/progress";
 import type { ProgressInfo } from "electron-updater";
+import { AlertCircle, CheckCircle, Info } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const Update = () => {
@@ -10,15 +20,6 @@ const Update = () => {
 	const [updateError, setUpdateError] = useState<ErrorType>();
 	const [progressInfo, setProgressInfo] = useState<Partial<ProgressInfo>>();
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
-	const [modalBtn, setModalBtn] = useState<{
-		cancelText?: string;
-		okText?: string;
-		onCancel?: () => void;
-		onOk?: () => void;
-	}>({
-		onCancel: () => setModalOpen(false),
-		onOk: () => window.electron.ipcRenderer.invoke("start-download"),
-	});
 
 	const checkUpdate = async () => {
 		setChecking(true);
@@ -41,12 +42,6 @@ const Update = () => {
 			setUpdateError(undefined);
 			// Can be update
 			if (arg1.update) {
-				setModalBtn((state) => ({
-					...state,
-					cancelText: "取消",
-					okText: "更新",
-					onOk: () => window.electron.ipcRenderer.invoke("start-download"),
-				}));
 				setUpdateAvailable(true);
 			} else {
 				setUpdateAvailable(false);
@@ -55,10 +50,13 @@ const Update = () => {
 		[],
 	);
 
-	const onUpdateError = useCallback((_event: Electron.IpcRendererEvent, arg1: ErrorType) => {
-		setUpdateAvailable(false);
-		setUpdateError(arg1);
-	}, []);
+	const onUpdateError = useCallback(
+		(_event: Electron.IpcRendererEvent, arg1: ErrorType) => {
+			setUpdateAvailable(false);
+			setUpdateError(arg1);
+		},
+		[],
+	);
 
 	const onDownloadProgress = useCallback(
 		(_event: Electron.IpcRendererEvent, arg1: ProgressInfo) => {
@@ -67,137 +65,129 @@ const Update = () => {
 		[],
 	);
 
-	const onUpdateDownloaded = useCallback((_event: Electron.IpcRendererEvent, ...args: any[]) => {
-		setProgressInfo({ percent: 100 });
-		setModalBtn((state) => ({
-			...state,
-			cancelText: "稍后",
-			okText: "立即安装",
-			onOk: () => window.electron.ipcRenderer.invoke("quit-and-install"),
-		}));
-	}, []);
+	const onUpdateDownloaded = useCallback(
+		(_event: Electron.IpcRendererEvent, ...args: any[]) => {
+			setProgressInfo({ percent: 100 });
+		},
+		[],
+	);
 
 	useEffect(() => {
 		// Get version information and whether to update
-		window.electron.ipcRenderer.on("update-can-available", onUpdateCanAvailable);
+		window.electron.ipcRenderer.on(
+			"update-can-available",
+			onUpdateCanAvailable,
+		);
 		window.electron.ipcRenderer.on("update-error", onUpdateError);
 		window.electron.ipcRenderer.on("download-progress", onDownloadProgress);
 		window.electron.ipcRenderer.on("update-downloaded", onUpdateDownloaded);
 
 		return () => {
-			window.electron.ipcRenderer.off("update-can-available", onUpdateCanAvailable);
+			window.electron.ipcRenderer.off(
+				"update-can-available",
+				onUpdateCanAvailable,
+			);
 			window.electron.ipcRenderer.off("update-error", onUpdateError);
 			window.electron.ipcRenderer.off("download-progress", onDownloadProgress);
 			window.electron.ipcRenderer.off("update-downloaded", onUpdateDownloaded);
 		};
 	}, []);
 
+	const handleStartDownload = () => {
+		window.electron.ipcRenderer.invoke("start-download");
+	};
+
+	const handleInstallNow = () => {
+		window.electron.ipcRenderer.invoke("quit-and-install");
+	};
+
 	return (
 		<>
-			<Modal
-				open={modalOpen}
-				cancelText={modalBtn?.cancelText}
-				okText={modalBtn?.okText}
-				onCancel={modalBtn?.onCancel}
-				onOk={modalBtn?.onOk}
-				footer={updateAvailable ? /* hide footer */ null : undefined}
-			>
-				<div className="space-y-6">
-					{updateError ? (
-						<div className="text-center">
-							<div className="mb-4">
-								<div className="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-									<svg
-										className="w-8 h-8 text-red-600 dark:text-red-400"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={2}
-											d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-										/>
-									</svg>
-								</div>
-								<h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-									下载最新版本时出错
-								</h3>
-								<p className="text-red-600 dark:text-red-400 text-sm">{updateError.message}</p>
-							</div>
-						</div>
-					) : updateAvailable ? (
-						<div className="space-y-6">
-							<div className="text-center">
-								<div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-									<svg
-										className="w-8 h-8 text-green-600 dark:text-green-400"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={2}
-											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-										/>
-									</svg>
-								</div>
-								<h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-									发现新版本
-								</h3>
-								<p className="text-gray-600 dark:text-gray-300">
-									最新版本: v{versionInfo?.newVersion}
-								</p>
-							</div>
+			<Dialog open={modalOpen} onOpenChange={setModalOpen}>
+				<DialogContent className="sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle>更新检查</DialogTitle>
+						<DialogDescription>
+							{updateError
+								? "检查更新时发生错误"
+								: updateAvailable
+									? "发现新版本可用"
+									: "当前已是最新版本"}
+						</DialogDescription>
+					</DialogHeader>
 
-							<div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-								<div className="flex items-center justify-between mb-2">
-									<span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-										版本更新
-									</span>
-									<span className="text-xs text-gray-500 dark:text-gray-400">
-										v{versionInfo?.version} → v{versionInfo?.newVersion}
-									</span>
-								</div>
-								<Progress percent={progressInfo?.percent} />
-							</div>
-						</div>
-					) : (
-						<div className="text-center">
-							<div className="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-								<svg
-									className="w-8 h-8 text-blue-600 dark:text-blue-400"
-									fill="none"
-									stroke="currentColor"
-									viewBox="0 0 24 24"
-								>
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
-										d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+					<div className="space-y-4">
+						{updateError ? (
+							<Alert variant="destructive">
+								<AlertCircle className="h-4 w-4" />
+								<AlertDescription>{updateError.message}</AlertDescription>
+							</Alert>
+						) : updateAvailable ? (
+							<div className="space-y-4">
+								<Alert>
+									<CheckCircle className="h-4 w-4" />
+									<AlertDescription>
+										最新版本: v{versionInfo?.newVersion}
+									</AlertDescription>
+								</Alert>
+
+								<div className="space-y-2">
+									<div className="flex items-center justify-between text-sm">
+										<span>版本更新</span>
+										<span className="text-muted-foreground">
+											v{versionInfo?.version} → v{versionInfo?.newVersion}
+										</span>
+									</div>
+									<ProgressUI
+										value={progressInfo?.percent}
+										className="w-full"
 									/>
-								</svg>
+									<div className="text-right text-sm text-muted-foreground">
+										{Math.min(progressInfo?.percent || 0, 100).toFixed(1)}%
+									</div>
+								</div>
 							</div>
-							<h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-								当前已是最新版本
-							</h3>
-							<div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-left">
-								<pre className="text-xs text-gray-600 dark:text-gray-300 overflow-auto">
-									{JSON.stringify(versionInfo ?? {}, null, 2)}
-								</pre>
+						) : (
+							<div className="space-y-4">
+								<Alert>
+									<Info className="h-4 w-4" />
+									<AlertDescription>当前已是最新版本</AlertDescription>
+								</Alert>
+
+								<div className="bg-muted rounded-lg p-4">
+									<pre className="text-xs overflow-auto">
+										{JSON.stringify(versionInfo ?? {}, null, 2)}
+									</pre>
+								</div>
 							</div>
-						</div>
-					)}
-				</div>
-			</Modal>
-			<button
+						)}
+					</div>
+
+					<DialogFooter>
+						{updateAvailable ? (
+							<>
+								<Button variant="outline" onClick={() => setModalOpen(false)}>
+									取消
+								</Button>
+								{progressInfo?.percent === 100 ? (
+									<Button onClick={handleInstallNow}>立即安装</Button>
+								) : (
+									<Button onClick={handleStartDownload}>开始更新</Button>
+								)}
+							</>
+						) : (
+							<Button onClick={() => setModalOpen(false)}>确定</Button>
+						)}
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			<Button
 				disabled={checking}
 				onClick={checkUpdate}
-				className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:transform-none"
+				variant="default"
+				size="lg"
+				className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:transform-none"
 			>
 				{checking ? (
 					<>
@@ -225,7 +215,12 @@ const Update = () => {
 					</>
 				) : (
 					<>
-						<svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg
+							className="w-4 h-4 mr-2"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
 							<path
 								strokeLinecap="round"
 								strokeLinejoin="round"
@@ -236,7 +231,7 @@ const Update = () => {
 						检查更新
 					</>
 				)}
-			</button>
+			</Button>
 		</>
 	);
 };
