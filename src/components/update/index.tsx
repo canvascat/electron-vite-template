@@ -165,16 +165,10 @@ const Update = () => {
 				</DialogContent>
 			</Dialog>
 
-			<Button
-				disabled={checking}
-				onClick={checkUpdate}
-				variant="default"
-				size="lg"
-				className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:transform-none"
-			>
+			<Button disabled={checking} onClick={checkUpdate} variant="default" size="lg">
 				{checking ? (
 					<>
-						<RefreshCw className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+						<RefreshCw className="animate-spin -ml-1 mr-2 h-4 w-4" />
 						检查中...
 					</>
 				) : (
