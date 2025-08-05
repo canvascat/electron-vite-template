@@ -182,7 +182,9 @@ export function MyComponent({ className, children }: MyComponentProps) {
 The project supports dark mode using the `dark:` prefix:
 
 ```tsx
-<div className="bg-white dark:bg-gray-900 text-black dark:text-white">Content</div>
+<div className="bg-white dark:bg-gray-900 text-black dark:text-white">
+	Content
+</div>
 ```
 
 ### TypeScript Standards

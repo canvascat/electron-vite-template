@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Progress as ProgressUI } from "@/components/ui/progress";
 import type { ProgressInfo } from "electron-updater";
-import { AlertCircle, CheckCircle, Download, Info, RefreshCw } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle,
+	Download,
+	Info,
+	RefreshCw,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const Update = () => {
@@ -50,10 +56,13 @@ const Update = () => {
 		[],
 	);
 
-	const onUpdateError = useCallback((_event: Electron.IpcRendererEvent, arg1: ErrorType) => {
-		setUpdateAvailable(false);
-		setUpdateError(arg1);
-	}, []);
+	const onUpdateError = useCallback(
+		(_event: Electron.IpcRendererEvent, arg1: ErrorType) => {
+			setUpdateAvailable(false);
+			setUpdateError(arg1);
+		},
+		[],
+	);
 
 	const onDownloadProgress = useCallback(
 		(_event: Electron.IpcRendererEvent, arg1: ProgressInfo) => {
@@ -62,19 +71,28 @@ const Update = () => {
 		[],
 	);
 
-	const onUpdateDownloaded = useCallback((_event: Electron.IpcRendererEvent, ...args: any[]) => {
-		setProgressInfo({ percent: 100 });
-	}, []);
+	const onUpdateDownloaded = useCallback(
+		(_event: Electron.IpcRendererEvent, ...args: any[]) => {
+			setProgressInfo({ percent: 100 });
+		},
+		[],
+	);
 
 	useEffect(() => {
 		// Get version information and whether to update
-		window.electron.ipcRenderer.on("update-can-available", onUpdateCanAvailable);
+		window.electron.ipcRenderer.on(
+			"update-can-available",
+			onUpdateCanAvailable,
+		);
 		window.electron.ipcRenderer.on("update-error", onUpdateError);
 		window.electron.ipcRenderer.on("download-progress", onDownloadProgress);
 		window.electron.ipcRenderer.on("update-downloaded", onUpdateDownloaded);
 
 		return () => {
-			window.electron.ipcRenderer.off("update-can-available", onUpdateCanAvailable);
+			window.electron.ipcRenderer.off(
+				"update-can-available",
+				onUpdateCanAvailable,
+			);
 			window.electron.ipcRenderer.off("update-error", onUpdateError);
 			window.electron.ipcRenderer.off("download-progress", onDownloadProgress);
 			window.electron.ipcRenderer.off("update-downloaded", onUpdateDownloaded);
@@ -114,7 +132,9 @@ const Update = () => {
 							<div className="space-y-4">
 								<Alert>
 									<CheckCircle className="h-4 w-4" />
-									<AlertDescription>最新版本: v{versionInfo?.newVersion}</AlertDescription>
+									<AlertDescription>
+										最新版本: v{versionInfo?.newVersion}
+									</AlertDescription>
 								</Alert>
 
 								<div className="space-y-2">
@@ -124,7 +144,10 @@ const Update = () => {
 											v{versionInfo?.version} → v{versionInfo?.newVersion}
 										</span>
 									</div>
-									<ProgressUI value={progressInfo?.percent} className="w-full" />
+									<ProgressUI
+										value={progressInfo?.percent}
+										className="w-full"
+									/>
 									<div className="text-right text-sm text-muted-foreground">
 										{Math.min(progressInfo?.percent || 0, 100).toFixed(1)}%
 									</div>
@@ -165,7 +188,12 @@ const Update = () => {
 				</DialogContent>
 			</Dialog>
 
-			<Button disabled={checking} onClick={checkUpdate} variant="default" size="lg">
+			<Button
+				disabled={checking}
+				onClick={checkUpdate}
+				variant="default"
+				size="lg"
+			>
 				{checking ? (
 					<>
 						<RefreshCw className="animate-spin -ml-1 mr-2 h-4 w-4" />

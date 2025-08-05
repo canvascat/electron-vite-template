@@ -1,5 +1,9 @@
 import { app, ipcMain } from "electron";
-import type { ProgressInfo, UpdateDownloadedEvent, UpdateInfo } from "electron-updater";
+import type {
+	ProgressInfo,
+	UpdateDownloadedEvent,
+	UpdateInfo,
+} from "electron-updater";
 import { createRequire } from "node:module";
 
 const { autoUpdater } = createRequire(import.meta.url)("electron-updater");
@@ -32,7 +36,9 @@ export function update(win: Electron.BrowserWindow) {
 	// Checking for updates
 	ipcMain.handle("check-update", async () => {
 		if (!app.isPackaged) {
-			const error = new Error("The update feature is only available after the package.");
+			const error = new Error(
+				"The update feature is only available after the package.",
+			);
 			return { message: error.message, error };
 		}
 
@@ -72,7 +78,9 @@ function startDownload(
 	callback: (error: Error | null, info: ProgressInfo | null) => void,
 	complete: (event: UpdateDownloadedEvent) => void,
 ) {
-	autoUpdater.on("download-progress", (info: ProgressInfo) => callback(null, info));
+	autoUpdater.on("download-progress", (info: ProgressInfo) =>
+		callback(null, info),
+	);
 	autoUpdater.on("error", (error: Error) => callback(error, null));
 	autoUpdater.on("update-downloaded", complete);
 	autoUpdater.downloadUpdate();

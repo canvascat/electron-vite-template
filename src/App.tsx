@@ -1,6 +1,13 @@
+import { TipcDemo } from "@/demos/TipcDemo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import UpdateElectron from "@/components/update";
 import { useState } from "react";
 import logoElectron from "./assets/logo-electron.svg";
@@ -19,9 +26,12 @@ function App() {
 						<img src={logoElectron} className="h-16 w-16" alt="Electron logo" />
 					</div>
 
-					<h1 className="text-4xl md:text-5xl font-bold mb-4">Electron + Vite + React</h1>
+					<h1 className="text-4xl md:text-5xl font-bold mb-4">
+						Electron + Vite + React
+					</h1>
 					<p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-						现代化的桌面应用开发框架，结合了 Electron 的强大功能和 Vite 的快速开发体验
+						现代化的桌面应用开发框架，结合了 Electron 的强大功能和 Vite
+						的快速开发体验
 					</p>
 
 					{/* Technology Stack Badges */}
@@ -75,12 +85,20 @@ function App() {
 						<div className="flex items-center justify-center space-x-4">
 							<span className="text-muted-foreground">
 								将静态文件放入{" "}
-								<code className="bg-muted px-2 py-1 rounded text-sm font-mono">/public</code> 文件夹
+								<code className="bg-muted px-2 py-1 rounded text-sm font-mono">
+									/public
+								</code>{" "}
+								文件夹
 							</span>
 							<img style={{ width: "3em" }} src="./node.svg" alt="Node logo" />
 						</div>
 					</CardContent>
 				</Card>
+
+				{/* TIPC Demo Component */}
+				<div className="mt-8">
+					<TipcDemo />
+				</div>
 
 				{/* Update Component */}
 				<div className="mt-8 flex justify-center">

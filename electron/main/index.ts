@@ -1,8 +1,10 @@
-import { app, BrowserWindow, shell, ipcMain } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createTIPCServer } from "tipc-electron/main";
+import functions from "./functions";
 import { update } from "./update";
 
 const require = createRequire(import.meta.url);
@@ -82,6 +84,14 @@ async function createWindow() {
 	update(win);
 }
 
+// 创建TIPC服务器
+const dispose = createTIPCServer({ functions: functions });
+
+// 应用退出时清理
+app.on("before-quit", () => {
+	dispose();
+});
+
 app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
@@ -106,19 +116,4 @@ app.on("activate", () => {
 	}
 });
 
-// New window example arg: new windows url
-ipcMain.handle("open-win", (_, arg) => {
-	const childWindow = new BrowserWindow({
-		webPreferences: {
-			preload,
-			nodeIntegration: true,
-			contextIsolation: false,
-		},
-	});
-
-	if (VITE_DEV_SERVER_URL) {
-		childWindow.loadURL(`${VITE_DEV_SERVER_URL}#${arg}`);
-	} else {
-		childWindow.loadFile(indexHtml, { hash: arg });
-	}
-});
+// 移除旧的IPC处理程序，现在使用tipc-electron
