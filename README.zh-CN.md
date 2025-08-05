@@ -1,6 +1,5 @@
 # electron-vite-template
 
-[![awesome-vite](https://awesome.re/mentioned-badge.svg)](https://github.com/vitejs/awesome-vite)
 ![GitHub stars](https://img.shields.io/github/stars/canvascat/electron-vite-template?color=fa6470)
 ![GitHub issues](https://img.shields.io/github/issues/canvascat/electron-vite-template?color=d8b22d)
 ![GitHub license](https://img.shields.io/github/license/canvascat/electron-vite-template)
