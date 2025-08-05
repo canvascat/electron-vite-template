@@ -16,7 +16,8 @@
 🔩 **现代化工具链** - Oxlint, Prettier, Vitest, Playwright  
 🎨 **美观的 UI** - shadcn/ui 组件库配合 Tailwind CSS  
 🖥 **多窗口支持** - 轻松实现多窗口应用  
-🔄 **自动更新** - 内置 electron-updater 集成
+🔄 **自动更新** - 内置 electron-updater 集成  
+🔗 **类型安全 IPC** - tipc-electron 提供类型安全的进程间通信
 
 ## 快速开始
 
@@ -46,6 +47,7 @@ pnpm dev
 - **TypeScript 5.9** - 完整的类型安全和智能提示
 - **Tailwind CSS 4** - 现代化的实用优先 CSS 框架
 - **shadcn/ui** - 美观且可访问的组件库
+- **tipc-electron** - 类型安全的 IPC 通信，类似 tRPC 的 API 设计
 - **Oxlint** - 快速的 JavaScript/TypeScript 代码检查
 - **Prettier** - 代码格式化，使用 OXC 插件
 - **Vitest** - 快速的单元测试框架
@@ -59,6 +61,8 @@ pnpm dev
 ```tree
 ├── electron                                 Electron 相关代码
 │   ├── main                                 主进程源码
+│   │   ├── functions                       tipc-electron API 路由
+│   │   └── tipc.ts                         tipc-electron 配置
 │   └── preload                              预加载脚本源码
 │
 ├── release                                  生产构建后生成的目录
@@ -73,6 +77,7 @@ pnpm dev
     │   └── update/                         自动更新组件
     ├── assets/                             静态资源
     ├── lib/                                工具函数
+    │   └── tipc.ts                         tipc-electron 客户端
     ├── type/                               TypeScript 类型定义
     └── demos/                              示例代码
 ```
@@ -137,6 +142,53 @@ pnpm format
 pnpm dlx shadcn@latest add [component-name]
 ```
 
+## 🔗 类型安全 IPC 通信
+
+该模板使用 **tipc-electron** 进行类型安全的进程间通信，采用类似 tRPC 的 API 设计。
+
+### 特性
+
+- **🔒 完全类型安全** - 基于 TypeScript 的端到端类型推断
+- **🚀 易于使用** - 类似 tRPC 的直观 API 设计
+- **📡 多种通信模式** - 支持请求-响应、事件发射和实时订阅
+- **🌊 响应式编程** - 基于 RxJS Observable 的订阅机制
+- **🔄 自动化管理** - 自动管理和清理订阅
+
+### 快速示例
+
+```typescript
+// 主进程 - 定义 API 路由
+export const appRouter = {
+	counter: {
+		subscribe: procedure.subscription(() => counter$),
+		increment: procedure.handle(() => {
+			const current = counter$.value;
+			counter$.next(current + 1);
+			return current + 1;
+		}),
+	},
+	logger: {
+		info: procedure.on((message: string) => {
+			console.log(`[INFO] ${message}`);
+		}),
+	},
+};
+
+// 渲染进程 - 使用 API
+import tipc from "@/lib/tipc";
+
+// 订阅实时数据
+const unsubscribe = tipc.counter.subscribe.subscribe((count) => {
+	console.log(`计数器: ${count}`);
+});
+
+// 调用 API 方法
+await tipc.counter.increment.invoke();
+tipc.logger.info.emit("计数器已增加");
+```
+
+详细文档请查看 [TIPC 迁移指南](TIPC_MIGRATION.md)。
+
 ## 🔄 自动更新
 
 使用 `electron-updater` 的内置自动更新功能。详情请参阅[更新文档](src/components/update/README.zh-CN.md)。
@@ -186,6 +238,7 @@ pnpm add -D [package-name]
 
 - [Development Guide](DEVELOPMENT.en.md) - 详细的英文开发指南
 - [开发指南](DEVELOPMENT.md) - 详细的中文开发指南
+- [TIPC Migration Guide](TIPC_MIGRATION.md) - 类型安全 IPC 通信指南
 - [自动更新文档](src/components/update/README.zh-CN.md) - 自动更新功能文档
 
 ## 📄 许可证

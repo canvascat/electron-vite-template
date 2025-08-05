@@ -16,7 +16,8 @@ English | [简体中文](README.zh-CN.md)
 🔩 **Modern tooling** - Oxlint, Prettier, Vitest, Playwright  
 🎨 **Beautiful UI** - shadcn/ui components with Tailwind CSS  
 🖥 **Multi-window support** - Easy to implement multiple windows  
-🔄 **Auto-update** - Built-in electron-updater integration
+🔄 **Auto-update** - Built-in electron-updater integration  
+🔗 **Type-safe IPC** - tipc-electron for type-safe inter-process communication
 
 ## 🛫 Quick Setup
 
@@ -46,6 +47,7 @@ pnpm dev
 - **TypeScript 5.9** - Full type safety and IntelliSense
 - **Tailwind CSS 4** - Modern utility-first CSS framework
 - **shadcn/ui** - Beautiful and accessible component library
+- **tipc-electron** - Type-safe IPC communication with tRPC-like API
 - **Oxlint** - Fast JavaScript/TypeScript linter
 - **Prettier** - Code formatting with OXC plugin
 - **Vitest** - Fast unit testing framework
@@ -59,6 +61,8 @@ Familiar React application structure with Electron integration:
 ```tree
 ├── electron                                 Electron-related code
 │   ├── main                                 Main-process source code
+│   │   ├── functions                       tipc-electron API routes
+│   │   └── tipc.ts                         tipc-electron configuration
 │   └── preload                              Preload-scripts source code
 │
 ├── release                                  Generated after production build
@@ -73,6 +77,7 @@ Familiar React application structure with Electron integration:
     │   └── update/                         Auto-update components
     ├── assets/                             Static assets
     ├── lib/                                Utility functions
+    │   └── tipc.ts                         tipc-electron client
     ├── type/                               TypeScript type definitions
     └── demos/                              Example code
 ```
@@ -139,6 +144,53 @@ To add more components:
 pnpm dlx shadcn@latest add [component-name]
 ```
 
+## 🔗 Type-Safe IPC Communication
+
+This template uses **tipc-electron** for type-safe inter-process communication with a tRPC-like API design.
+
+### Features
+
+- **🔒 Fully Type-Safe** - End-to-end type inference powered by TypeScript
+- **🚀 Easy to Use** - Intuitive API design similar to tRPC
+- **📡 Multiple Communication Modes** - Support for request-response, event emission, and real-time subscriptions
+- **🌊 Reactive Programming** - Subscription mechanism based on RxJS Observable
+- **🔄 Automated** - Automatic management and cleanup of subscriptions
+
+### Quick Example
+
+```typescript
+// Main process - Define API routes
+export const appRouter = {
+	counter: {
+		subscribe: procedure.subscription(() => counter$),
+		increment: procedure.handle(() => {
+			const current = counter$.value;
+			counter$.next(current + 1);
+			return current + 1;
+		}),
+	},
+	logger: {
+		info: procedure.on((message: string) => {
+			console.log(`[INFO] ${message}`);
+		}),
+	},
+};
+
+// Renderer process - Use the API
+import tipc from "@/lib/tipc";
+
+// Subscribe to real-time data
+const unsubscribe = tipc.counter.subscribe.subscribe((count) => {
+	console.log(`Counter: ${count}`);
+});
+
+// Call API methods
+await tipc.counter.increment.invoke();
+tipc.logger.info.emit("Counter incremented");
+```
+
+See [TIPC Migration Guide](TIPC_MIGRATION.md) for detailed documentation.
+
 ## 🔄 Auto Update
 
 Built-in auto-update functionality using `electron-updater`. See [update documentation](src/components/update/README.md) for details.
@@ -188,6 +240,7 @@ This template follows **Electron Security Best Practices** and disables Node.js 
 
 - [Development Guide](DEVELOPMENT.en.md) - Detailed development guide
 - [开发指南](DEVELOPMENT.md) - 详细的中文开发指南
+- [TIPC Migration Guide](TIPC_MIGRATION.md) - Type-safe IPC communication guide
 - [Auto Update Documentation](src/components/update/README.md) - Auto-update feature documentation
 
 ## 📄 License
