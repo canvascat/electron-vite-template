@@ -67,7 +67,7 @@ alwaysApply: true
 
 ### Electron 规范
 
-- IPC 通信使用 `window.electron.ipcRenderer`
+- IPC 通信使用 `tipc-electron`
 - 主进程代码放在 `electron/main/`
 - 预加载脚本放在 `electron/preload/`
 - 使用类型安全的 IPC 通信
