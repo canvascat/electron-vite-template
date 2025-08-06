@@ -27,7 +27,7 @@
 		"pretest": "vite build --mode=test",
 		"test": "vitest run",
 		"lint": "oxlint",
-		"format": "prettier --write ."
+		"format": "prettier --write --cache ."
 	},
 	"pnpm": {
 		"overrides": {
