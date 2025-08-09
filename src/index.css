@@ -119,8 +119,25 @@
 	}
 }
 
-@layer utilities {
-	.animate-spin-slow {
-		animation: spin 20s linear infinite;
-	}
+/* for electron https://www.electronjs.org/docs/latest/tutorial/custom-window-interactions#custom-draggable-regions */
+@utility app-region-* {
+	app-region: --value("drag", "no-drag");
+}
+
+/* custom scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--border) transparent;
+}
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--border);
+	border-radius: 5px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
 }
